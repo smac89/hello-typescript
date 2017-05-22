@@ -7,14 +7,18 @@
     "start": "npm run build:live",
     "build:live": "nodemon"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["typescript", "nodejs", "ts-node", "cli", "node", "hello"],
+  "author": "smac89",
+  "license": "WTFPL",
   "devDependencies": {
     "@types/node": "^7.0.21",
     "nodemon": "^1.11.0",
     "ts-node": "^3.0.4",
     "typescript": "^2.3.2"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/smac89/hello-typescript.git"
+  }
 }
