@@ -5,4 +5,5 @@ typescript from the console (terminal) with nodejs.
 
 ## Running
 
-`npm run start`
+`npm install`
+`npm start`

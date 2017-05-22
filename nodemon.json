@@ -1,9 +1,9 @@
 {
-	"ignore": ["node_modules"],
-	"delay": "2000ms",
-	"execMap": {
-		"ts": "ts-node"
-	},
-	"runOnChangeOnly": false,
-	"verbose": true
+    "ignore": ["node_modules"],
+    "delay": "2000ms",
+    "execMap": {
+        "ts": "ts-node"
+    },
+    "runOnChangeOnly": false,
+    "verbose": true
 }
