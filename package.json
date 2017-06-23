@@ -7,7 +7,14 @@
     "start": "npm run build:live",
     "build:live": "nodemon"
   },
-  "keywords": ["typescript", "nodejs", "ts-node", "cli", "node", "hello"],
+  "keywords": [
+    "typescript",
+    "nodejs",
+    "ts-node",
+    "cli",
+    "node",
+    "hello"
+  ],
   "author": "smac89",
   "license": "WTFPL",
   "devDependencies": {
