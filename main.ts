@@ -1,40 +1,65 @@
-const models: Map<string, any> = createBarrels([
-    'app/shared/models',
-    'app/modules/subscription/shared/models'
-]);
+import {Transform, Readable} from 'stream';
 
-function createBarrels(list: string[]): Map<string, any> {
-    return list.reduce((objMap, barrel) => {
-        return objMap.set(barrel, {
-            main: 'index.js',
-            defaultExtension: 'js'
+const alphaTransform = new class extends Transform {
+    constructor() {
+        super({
+            objectMode: true,
+            transform: (chunk: string | Buffer, encoding: string, callback: Function) => {
+                let transformed: IterableIterator<string>;
+                if (Buffer.isBuffer(chunk)) {
+                    transformed = function* () {
+                        for (const val of chunk) {
+                            yield String.fromCharCode(val);
+                        }
+                    }();
+                } else {
+                    transformed = chunk[Symbol.iterator]();
+                }
+                callback(null,
+                    Array.from(transformed).map(s => s.toUpperCase()).join(''));
+            }
         });
-    }, new Map<string, any>());
+    }
 }
 
-let g = new Map<string, number>([
-    ["Hello", 1],
-    ["World", 2]
-]);
+let spyingAlphaTransformStream =  new class extends Transform {
+    constructor() {
+        super({
+            objectMode: true,
+            transform: (chunk: string | Buffer, encoding: string, callback: Function) => {
+                console.log('Before transform:');
+                if (Buffer.isBuffer(chunk)) {
+                    console.log(chunk.toString('utf-8'));
+                    alphaTransform.write(chunk);
+                } else {
+                    console.log(chunk);
+                    alphaTransform.write(chunk, encoding);
+                }
+                callback(null, alphaTransform.read());
+            }
+        });
 
-function es6MapToJSON<K, V>(map: Map<K, V>): {K: V} {
-    return Array.from(map.entries()).reduce((objMap, entry) => {
-        objMap[entry[0]] = (entry[1] instanceof Map ? es6MapToJSON(<any>entry[1]): entry[1]);
-        return objMap;
-    }, Object.create(null));
+        this.on('data', (transformed) => {
+            console.log('After transform:\n', transformed);
+        });
+    }
 }
 
-for (const entry of Array.from(g.entries())) {
-    console.log(entry[0]);
-}
+let reader = new class extends Readable {
+    constructor(private content?: string | Buffer) {
+        super({
+            read: (size?: number) => {
+                if (!this.content) {
+                    this.push(null);
+                } else {
+                    this.push(this.content.slice(0, size));
+                    this.content = this.content.slice(size);
+                }
+            }
+        });
+    }
+} (new Buffer('The quick brown fox jumps over the lazy dog.\n'));
 
-console.log(es6MapToJSON(models));
+reader.pipe(spyingAlphaTransformStream)
+    .pipe(process.stdout);
 
-let myObj = es6MapToJSON(models);
-
-console.log(Object.assign(myObj, {
-	"Hi": 1,
-	"World": 2
-}));
-
-console.log(models instanceof Map);
