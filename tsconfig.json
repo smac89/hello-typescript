@@ -4,11 +4,9 @@
     "module": "commonjs",
     "typeRoots": ["node_modules/@types"],
     "lib": ["es6", "dom"],
-    "outDir": "./dist",
     
     "strict": true,
     "noUnusedLocals": true,
-    "typeRoots": ["node_modules/@types"],
     "types": ["node"]
   }
 }

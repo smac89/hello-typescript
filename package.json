@@ -1,5 +1,5 @@
 {
-  "name": "Documents",
+  "name": "hello-typescript",
   "version": "1.0.0",
   "description": "",
   "main": "main.ts",
@@ -18,10 +18,10 @@
   "author": "smac89",
   "license": "WTFPL",
   "devDependencies": {
-    "@types/node": "^7.0.21",
+    "@types/node": "^8.0.3",
     "nodemon": "^1.11.0",
-    "ts-node": "^3.0.4",
-    "typescript": "^2.3.2"
+    "ts-node": "^3.1.0",
+    "typescript": "^2.4.0"
   },
   "dependencies": {},
   "repository": {

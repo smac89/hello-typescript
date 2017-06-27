@@ -39,7 +39,7 @@ let spyingAlphaTransformStream =  new class extends Transform {
             }
         });
 
-        this.on('data', (transformed) => {
+        this.on('data', (transformed: string | Buffer) => {
             console.log('After transform:\n', transformed);
         });
     }
