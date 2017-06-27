@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "es2015",
     "module": "commonjs",
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": ["node_modules/@types",
+    	"manual_typings"],
     "lib": ["es6", "dom"],
     
     "strict": true,

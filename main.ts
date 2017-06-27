@@ -1,3 +1,4 @@
+
 import {Transform, Readable} from 'stream';
 
 const alphaTransform = new class extends Transform {
@@ -22,30 +23,51 @@ const alphaTransform = new class extends Transform {
     }
 }
 
-let spyingAlphaTransformStream =  new class extends Transform {
-    constructor() {
+class LoggingStream extends Transform {
+    private pending: () => void;
+    private isReady = false;
+
+    constructor(message: string) {
         super({
             objectMode: true,
             transform: (chunk: string | Buffer, encoding: string, callback: Function) => {
-                console.log('Before transform:');
-                if (Buffer.isBuffer(chunk)) {
-                    console.log(chunk.toString('utf-8'));
-                    alphaTransform.write(chunk);
+                if (!this.isReady) {
+                    this.pending = () => {
+                        console.log(message);
+                        if (Buffer.isBuffer(chunk)) {
+                            console.log(`[${new Date().toTimeString()}]: ${chunk.toString('utf-8')}`);
+                        } else {
+                            console.log(`[${new Date().toTimeString()}]: ${chunk}`);
+                        }
+                        callback(null, chunk);
+                    }
                 } else {
-                    console.log(chunk);
-                    alphaTransform.write(chunk, encoding);
+                    console.log(message);
+                    if (Buffer.isBuffer(chunk)) {
+                        console.log(`[${new Date().toTimeString()}]: ${chunk.toString('utf-8')}`);
+                    } else {
+                        console.log(`[${new Date().toTimeString()}]: ${chunk}`);
+                    }
+                    callback(null, chunk);
                 }
-                callback(null, alphaTransform.read());
             }
         });
 
-        this.on('data', (transformed: string | Buffer) => {
-            console.log('After transform:\n', transformed);
-        });
+        this.on('pipe', this.pauseOnPipe);
+    }
+
+    private pauseOnPipe() {
+        this.removeListener('pipe', this.pauseOnPipe);
+        setTimeout(() => {
+            this.isReady = true;
+            if (this.pending) {
+                this.pending();
+            }
+        }, 3000);
     }
 }
 
-let reader = new class extends Readable {
+const reader = new class extends Readable {
     constructor(private content?: string | Buffer) {
         super({
             read: (size?: number) => {
@@ -60,6 +82,8 @@ let reader = new class extends Readable {
     }
 } (new Buffer('The quick brown fox jumps over the lazy dog.\n'));
 
-reader.pipe(spyingAlphaTransformStream)
+reader.pipe(new LoggingStream("Before transformation:"))
+    .pipe(alphaTransform)
+    .pipe(new LoggingStream("After transformation:"))
     .pipe(process.stdout);
 
