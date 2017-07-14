@@ -1,5 +1,6 @@
 
 import {Transform, Readable} from 'stream';
+import {doRead} from './read-pipe';
 
 const alphaTransform = new class extends Transform {
     constructor() {
@@ -87,3 +88,5 @@ reader.pipe(new LoggingStream("Before transformation:"))
     .pipe(new LoggingStream("After transformation:"))
     .pipe(process.stdout);
 
+console.log("Testing a piped reader!!");
+doRead();
