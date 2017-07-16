@@ -18,17 +18,16 @@ export function doRead() {
 
 	// let piped = false;
 
-	const passReader = new PassThrough({
-		objectMode: true,
-		read: (size?: number) => {
-			// console.log("read called!!");
-			passReader.push(reader.read(size));
-			// if (!piped) {
-			// 	reader.pipe(passReader);
-			// 	piped = true;
-			// }
+	const passReader = new class extends PassThrough {
+		constructor() {
+			super({objectMode: true});
 		}
-	});
+		
+		_read(size: number) {
+			this._read = super._read;
+			reader.pipe(this);
+		}
+	};
 
 	passReader.pipe(process.stdout);
 }
