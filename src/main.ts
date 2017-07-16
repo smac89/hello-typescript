@@ -54,11 +54,10 @@ class LoggingStream extends Transform {
             }
         });
 
-        this.on('pipe', this.pauseOnPipe);
+        this.once('pipe', this.pauseOnPipe);
     }
 
     private pauseOnPipe() {
-        this.removeListener('pipe', this.pauseOnPipe);
         setTimeout(() => {
             this.isReady = true;
             if (this.pending) {
